@@ -32,14 +32,14 @@
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/listview_devices"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="0dp"
                 android:layout_marginVertical="16dp"
                 android:layout_marginHorizontal="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text"
                 tools:listitem="@layout/item_bluetooth"
-                />
+                app:layout_constraintBottom_toTopOf="@+id/button_connect" />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_discover"
@@ -53,9 +53,9 @@
                 android:textSize="16sp"
                 android:onClick="@{() -> viewModel.onDiscoverBluetoothButtonClick()}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listview_devices"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintEnd_toStartOf="@+id/button_connect" />
+                app:layout_constraintEnd_toStartOf="@+id/button_connect"
+                app:layout_constraintBottom_toTopOf="@+id/button_on" />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_connect"
@@ -69,9 +69,9 @@
                 android:textSize="16sp"
                 android:onClick="@{() -> viewModel.onConnectBluetoothButtonClick()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listview_devices"
                 app:layout_constraintStart_toEndOf="@+id/button_discover"
-                app:layout_constraintHorizontal_bias="0.5" />
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintBottom_toTopOf="@+id/button_on" />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_on"
@@ -79,14 +79,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="16dp"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="32dp"
                 android:padding="16dp"
                 style="?attr/materialButtonOutlinedStyle"
                 android:textSize="16sp"
                 android:onClick="@{() -> viewModel.onBluetoothOnButtonClick()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_connect" />
+                app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
