@@ -4,19 +4,31 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.testapp.utils.SingleLiveEvent
 
-class MainViewModel : ViewModel(){
+class MainViewModel : BaseViewModel(){
+
+    companion object{
+        const val EVENT_BLUETOOTH_DISCOVER = 22212
+        const val EVENT_BLUETOOTH_CONNECT = 22213
+        const val EVENT_BLUETOOTH_ON = 22214
+    }
 
     //Save the selected Bluetooth here
     private val _bluetoothName = MutableLiveData<Int>()
     val bluetoothName: LiveData<Int> = _bluetoothName
 
     //bluetooth Fragment event
-    fun onDiscoverButtonClick(){
+    fun onDiscoverBluetoothButtonClick(){
         Log.d("djaljflk","찾기 버튼 클릭")
     }
 
-    fun onConnectButtonClick(){
+    fun onConnectBluetoothButtonClick(){
         Log.d("djaljflk","연결 버튼 클릭")
+    }
+
+    fun onBluetoothOnButtonClick(){
+        Log.d("djaljflk","블루투스 활성화 버튼 클릭")
+        viewEvent(EVENT_BLUETOOTH_ON)
     }
 }
