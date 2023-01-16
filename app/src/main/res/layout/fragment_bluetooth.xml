@@ -26,9 +26,10 @@
                 android:textSize="20sp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                />
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/listview_devices"
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
@@ -36,7 +37,9 @@
                 android:layout_marginHorizontal="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text" />
+                app:layout_constraintTop_toBottomOf="@+id/text"
+                tools:listitem="@layout/item_bluetooth"
+                />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_discover"
