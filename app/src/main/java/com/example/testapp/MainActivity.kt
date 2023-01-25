@@ -4,6 +4,10 @@ import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -18,15 +22,36 @@ import com.example.testapp.model.BluetoothModel
 import com.example.testapp.viewModel.MainViewModel
 
 
+//private lateinit var broadcastReceiver: BroadcastReceiver
+
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val mainViewModel: MainViewModel by viewModels()
+    private val discoverBlueTootlList = mutableListOf<BluetoothModel>()
 
     private val bluetoothManager: BluetoothManager by lazy {
         getSystemService(BluetoothManager::class.java)
     }
     private val bluetoothAdapter: BluetoothAdapter? by lazy {
         bluetoothManager.adapter
+    }
+
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action: String? = intent.action
+            when(action) {
+                BluetoothDevice.ACTION_FOUND -> {
+                    // Discovery has found a device. Get the BluetoothDevice
+                    // object and its info from the Intent.
+                    val device: BluetoothDevice? =
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    discoverBlueTootlList.add(BluetoothModel(device?.name ?: "이름없는 기기",device?.address))
+                    Log.d("DEV_DEBUG","${device?.name}, ${device?.address}")
+                    Log.d("DEV_DEBUG","${mainViewModel.bluetoothList.value}")
+                }
+            }
+            mainViewModel.addBluetooth(discoverBlueTootlList)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,9 +61,15 @@ class MainActivity : AppCompatActivity() {
         bluetoothAdapterNullCheck()
         manageViewModelEvent()
         bleInitialize()
-        pairedDevice()
 
+        pairedDevice()
         selectFragment()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 
     /**
@@ -52,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                         setActivate()
                     }
                     MainViewModel.EVENT_BLUETOOTH_DISCOVER ->{
-
+                        discoverBluetooth()
                     }
                 }
             }
@@ -84,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.bluetoothList.value = pairedDevices?.map { device ->
             Log.d("djaljflk","${device.name}")
             BluetoothModel(device.name, device.address)
-        }
+        } as MutableList<BluetoothModel>?
     }
 
     private fun requestBlePermissions(){
@@ -113,9 +144,9 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             bluetoothAdapter?.enable()
-            Toast.makeText(this, "Turn on Bluetooth", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "블루투스 활성화", Toast.LENGTH_SHORT).show()
         }else{
-            Toast.makeText(this, "It is already active.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "블루투스가 이미 활성화되어있습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -124,9 +155,33 @@ class MainActivity : AppCompatActivity() {
      */
     private fun bluetoothAdapterNullCheck(){
         if(bluetoothAdapter == null) {
-            Toast.makeText(this, "This device does not support Bluetooth.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_SHORT).show()
             finish()
         }
+    }
+
+    private fun discoverBluetooth(){
+        bluetoothAdapter?.let{
+            bluetoothAdapter?.let {
+                // 블루투스가 활성화 상태라면
+                if (it.isEnabled) {
+                    // 현재 검색중이라면
+                    if (it.isDiscovering) {
+                        // 검색 취소
+                        it.cancelDiscovery()
+                        Toast.makeText(this,  "기기검색이 중단되었습니다.", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+                    // 검색시작
+                    it.startDiscovery()
+                    Toast.makeText(this,  "기기 검색을 시작하였습니다", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this,  "블루투스가 비활성화되어 있습니다", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        registerReceiver(receiver, filter)
     }
 
     private fun selectFragment(){

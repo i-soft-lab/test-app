@@ -23,7 +23,7 @@ class BluetoothListAdapter(private val viewModel: MainViewModel) :
         fun bind(bluetoothModel: BluetoothModel) {
             binding.textBluetoothName.text = bluetoothModel.deviceName
             binding.textBluetoothAddress.text = bluetoothModel.deviceMacAddress
-            Log.d("djaljflk", bluetoothModel.deviceName)
+            bluetoothModel.deviceName?.let { Log.d("DEV_DEBUG", it) }
         }
     }
 

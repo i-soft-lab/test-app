@@ -18,17 +18,22 @@ class MainViewModel : BaseViewModel(){
 
     //bluetooth Fragment event
     fun onDiscoverBluetoothButtonClick(){
-        Log.d("djaljflk","찾기 버튼 클릭")
+        Log.d("DEV_DEBUG","찾기 버튼 클릭")
         viewEvent(EVENT_BLUETOOTH_DISCOVER)
     }
 
     fun onConnectBluetoothButtonClick(){
-        Log.d("djaljflk","연결 버튼 클릭")
+        Log.d("DEV_DEBUG","연결 버튼 클릭")
         viewEvent(EVENT_BLUETOOTH_CONNECT)
     }
 
     fun onBluetoothOnButtonClick(){
-        Log.d("djaljflk","블루투스 활성화 버튼 클릭")
+        Log.d("DEV_DEBUG","블루투스 활성화 버튼 클릭")
         viewEvent(EVENT_BLUETOOTH_ON)
+    }
+
+
+    fun addBluetooth(list: List<BluetoothModel>){
+        _bluetoothList.value = list
     }
 }
