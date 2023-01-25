@@ -58,7 +58,7 @@ class BluetoothFragment : Fragment() {
         }
 
         mainViewModel.bluetoothList.observe(viewLifecycleOwner){
-            Log.d("djaljflk","리스트 업데이트됨")
+            Log.d("DEV_DEBUG","리스트 업데이트됨")
             bluetoothListAdapter.bluetoothList = it
         }
     }
