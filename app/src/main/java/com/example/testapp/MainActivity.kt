@@ -39,14 +39,19 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action: String? = intent.action
-            when(action) {
+            when (action) {
                 BluetoothDevice.ACTION_FOUND -> {
                     // Discovery has found a device. Get the BluetoothDevice
                     // object and its info from the Intent.
                     val device: BluetoothDevice? =
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    discoverBlueTootlList.add(BluetoothModel(device?.name ?: "이름없는 기기",device?.address))
-                    Log.d("DEV_DEBUG","${device?.name}, ${device?.address}")
+                    discoverBlueTootlList.add(
+                        BluetoothModel(
+                            device?.name ?: "이름없는 기기",
+                            device?.address
+                        )
+                    )
+                    Log.d("DEV_DEBUG", "${device?.name}, ${device?.address}")
                 }
             }
             mainViewModel.addBluetooth(discoverBlueTootlList)
@@ -74,14 +79,15 @@ class MainActivity : AppCompatActivity() {
     /**
      * A function that handles events from a view model to activity.
      */
-    private fun manageViewModelEvent(){
+    private fun manageViewModelEvent() {
         mainViewModel.viewEvent.observe(this) {
             it.getContentIfNotHandled()?.let { event ->
                 when (event) {
                     MainViewModel.EVENT_BLUETOOTH_ON -> {
                         setActivate()
+                        pairedDevice()
                     }
-                    MainViewModel.EVENT_BLUETOOTH_DISCOVER ->{
+                    MainViewModel.EVENT_BLUETOOTH_DISCOVER -> {
                         discoverBluetooth()
                     }
                 }
@@ -92,16 +98,16 @@ class MainActivity : AppCompatActivity() {
     /**
      * Bluetooth Runtime Permission Check
      */
-    private fun bleInitialize(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    private fun bleInitialize() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
-                checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
+            ) {
                 requestBlePermissions()
                 return
             }
-        }
-        else {
+        } else {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestBlePermissions()
                 return
@@ -109,42 +115,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun pairedDevice(){
-        val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
-        mainViewModel.bluetoothList.value = pairedDevices?.map { device ->
-            Log.d("djaljflk","${device.name}")
-            BluetoothModel(device.name, device.address)
-        } as MutableList<BluetoothModel>?
+    private fun pairedDevice() {
+        if (bluetoothAdapter?.isEnabled == true) {
+            //noinspection MissingPermission
+            val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
+            mainViewModel.bluetoothList.value = pairedDevices?.map { device ->
+                Log.d("djaljflk", "${device.name}")
+                //noinspection MissingPermission
+                BluetoothModel(device.name, device.address)
+            } as MutableList<BluetoothModel>?
+        }
     }
 
-    private fun requestBlePermissions(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    private fun requestBlePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestPermissions(
                 arrayOf(
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ),100)
-        }
-        else {
+                ), 100
+            )
+        } else {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                100)
+                100
+            )
         }
     }
 
     fun setActivate() {
-        if(bluetoothAdapter?.isEnabled == false){
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
+        if (bluetoothAdapter?.isEnabled == false) {
+            //noinspection MissingPermission
             bluetoothAdapter?.enable()
             Toast.makeText(this, "블루투스 활성화", Toast.LENGTH_SHORT).show()
-        }else{
+        } else {
             Toast.makeText(this, "블루투스가 이미 활성화되어있습니다.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -152,30 +157,34 @@ class MainActivity : AppCompatActivity() {
     /**
      * Check to see if Bluetooth is supported
      */
-    private fun bluetoothAdapterNullCheck(){
-        if(bluetoothAdapter == null) {
+    private fun bluetoothAdapterNullCheck() {
+        if (bluetoothAdapter == null) {
             Toast.makeText(this, "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
 
-    private fun discoverBluetooth(){
-        bluetoothAdapter?.let{
+    private fun discoverBluetooth() {
+        bluetoothAdapter?.let {
             bluetoothAdapter?.let {
                 // 블루투스가 활성화 상태라면
                 if (it.isEnabled) {
                     // 현재 검색중이라면
+                    //noinspection MissingPermission
                     if (it.isDiscovering) {
                         // 검색 취소
+                        //noinspection MissingPermission
                         it.cancelDiscovery()
-                        Toast.makeText(this,  "기기검색이 중단되었습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "기기검색이 중단되었습니다.", Toast.LENGTH_SHORT).show()
                         return
                     }
+                    discoverBlueTootlList.clear()
                     // 검색시작
+                    //noinspection MissingPermission
                     it.startDiscovery()
-                    Toast.makeText(this,  "기기 검색을 시작하였습니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "기기 검색을 시작하였습니다", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this,  "블루투스가 비활성화되어 있습니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "블루투스가 비활성화되어 있습니다", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -183,17 +192,17 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, filter)
     }
 
-    private fun selectFragment(){
+    private fun selectFragment() {
         changeFragment(BluetoothFragment())
         binding.bottomNavigation.setOnItemSelectedListener {
-            when(it.itemId){
-                R.id.bluetooth ->{
+            when (it.itemId) {
+                R.id.bluetooth -> {
                     changeFragment(BluetoothFragment())
                 }
-                R.id.wifi ->{
+                R.id.wifi -> {
                     changeFragment(WifiFragment())
                 }
-                R.id.chart ->{
+                R.id.chart -> {
                     changeFragment(GdxFragment())
                 }
             }

@@ -32,7 +32,6 @@ class MainViewModel : BaseViewModel(){
         viewEvent(EVENT_BLUETOOTH_ON)
     }
 
-
     fun addBluetooth(list: List<BluetoothModel>){
         _bluetoothList.value = list
     }
