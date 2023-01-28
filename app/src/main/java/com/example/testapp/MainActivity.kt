@@ -169,6 +169,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun discoverBluetooth() {
+        discoverBlueTootlList.clear()
         bluetoothAdapter?.let {
             bluetoothAdapter?.let {
                 // 블루투스가 활성화 상태라면
@@ -182,7 +183,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "기기검색이 중단되었습니다.", Toast.LENGTH_SHORT).show()
                         return
                     }
-                    discoverBlueTootlList.clear()
                     // 검색시작
                     //noinspection MissingPermission
                     it.startDiscovery()
