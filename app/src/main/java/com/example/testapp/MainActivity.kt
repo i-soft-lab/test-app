@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity() {
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     discoverBlueTootlList.add(BluetoothModel(device?.name ?: "이름없는 기기",device?.address))
                     Log.d("DEV_DEBUG","${device?.name}, ${device?.address}")
-                    Log.d("DEV_DEBUG","${mainViewModel.bluetoothList.value}")
                 }
             }
             mainViewModel.addBluetooth(discoverBlueTootlList)
